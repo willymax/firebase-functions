@@ -8,8 +8,9 @@ exports.FBAuth = (req, res, next) => {
     idToken = req.headers.authorization.split("Bearer ")[1];
   } else {
     console.error("No token found");
-    return res.status(403).json({ error: "Unauthenticated" });
+    return res.status(403).json({ error: "Unauthorized" });
   }
+
   admin
     .auth()
     .verifyIdToken(idToken)
@@ -22,9 +23,13 @@ exports.FBAuth = (req, res, next) => {
         .get();
     })
     .then(data => {
-      req.user.handle = data.docs[0].data().handle;
-      req.user.imageUrl = data.docs[0].data().imageUrl;
-      return next();
+      if (data.empty) {
+        return res.status(400).json({ error: "Not authenticated" });
+      } else {
+        req.user.handle = data.docs[0].data().handle;
+        req.user.imageUrl = data.docs[0].data().imageUrl;
+        return next();
+      }
     })
     .catch(err => {
       console.error("Error while verifying token ", err);
