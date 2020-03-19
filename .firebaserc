@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "socialape-d8e91"
+    "default": "socialape-d8e91",
+    "chat": "socialape-d8e91"
   }
 }
